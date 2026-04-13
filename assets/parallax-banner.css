@@ -1,0 +1,86 @@
+/* ── Parallax Banner ─────────────────────────────────────────────────────── */
+
+.pb-section {
+  position: relative;
+  display: block;
+  margin: 0;
+  padding: 0;
+  /* overflow:clip would break sticky — use overflow:hidden only on the image */
+}
+
+/* Height options */
+.pb-section[data-image-height="small"]      { min-height: 42rem; }
+.pb-section[data-image-height="medium"]     { min-height: 56rem; }
+.pb-section[data-image-height="large"]      { min-height: 72rem; }
+.pb-section[data-image-height="fullscreen"] { min-height: 100vh; }
+
+/* ── Image: fills section, clips inside its own box ─────────────────────── */
+.pb-image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden; /* clip overflow on image only, not the section */
+}
+
+.pb-image img,
+.pb-image svg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+}
+
+/* ── Content: sticky, overlaps the image from the top of the section ──────── */
+.pb-content {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  width: 100%;
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+  z-index: 2;
+  pointer-events: none;
+  margin-top: 0;
+}
+
+/* ── Box: text + buttons, no card, no opacity ───────────────────────────── */
+.pb-box {
+  pointer-events: all;
+  padding: 4rem;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.pb-heading { margin: 0; }
+.pb-text    { margin: 0; }
+
+.pb-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+/* Force full opacity on buttons — override any theme color-scheme alpha */
+.pb-box .button {
+  --alpha-button-background: 1 !important;
+  --alpha-button-border: 1 !important;
+  opacity: 1 !important;
+}
+
+/* ── Mobile ──────────────────────────────────────────────────────────────── */
+@media screen and (max-width: 749px) {
+  .pb-section[data-image-height="fullscreen"] { min-height: 100svh; }
+
+  .pb-content {
+    position: relative;
+    height: auto;
+    min-height: 30rem;
+  }
+
+  .pb-box { padding: 3rem 2rem; }
+}

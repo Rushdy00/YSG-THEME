@@ -1,0 +1,317 @@
+{%- liquid
+  assign items = section.blocks | where: 'type', 'item'
+  if items.size == 0
+    assign show_section = false
+  else
+    assign show_section = true
+  endif
+
+  assign scroll_duration = section.settings.scroll_speed | times: items.size
+-%}
+
+{%- if show_section -%}
+  <style>
+    #scrolling-ticker-{{ section.id }} {
+      background-color: {{ section.settings.background_color }};
+      border-top: {{ section.settings.border_width }}px solid {{ section.settings.border_color }};
+      border-bottom: {{ section.settings.border_width }}px solid {{ section.settings.border_color }};
+      padding-top: {{ section.settings.padding_vertical }}px;
+      padding-bottom: {{ section.settings.padding_vertical }}px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    #scrolling-ticker-{{ section.id }} .ticker__track {
+      display: flex;
+      width: max-content;
+      animation: ticker-scroll-{{ section.id }} {{ scroll_duration }}s linear infinite;
+      {%- if section.settings.pause_on_hover %}
+      animation-play-state: running;
+      {%- endif %}
+    }
+
+    {%- if section.settings.pause_on_hover %}
+    #scrolling-ticker-{{ section.id }}:hover .ticker__track {
+      animation-play-state: paused;
+    }
+    {%- endif %}
+
+    {%- if section.settings.scroll_direction == 'right' %}
+    #scrolling-ticker-{{ section.id }} .ticker__track {
+      animation-direction: reverse;
+    }
+    {%- endif %}
+
+    @keyframes ticker-scroll-{{ section.id }} {
+      0%   { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+
+    #scrolling-ticker-{{ section.id }} .ticker__item {
+      display: flex;
+      align-items: center;
+      white-space: nowrap;
+      padding: 0 {{ section.settings.item_gap }}px;
+      font-size: {{ section.settings.font_size }}px;
+      font-weight: {{ section.settings.font_weight }};
+      color: {{ section.settings.text_color }};
+      letter-spacing: {{ section.settings.letter_spacing }}em;
+      text-transform: {{ section.settings.text_transform }};
+    }
+
+    #scrolling-ticker-{{ section.id }} .ticker__item a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    #scrolling-ticker-{{ section.id }} .ticker__item a:hover {
+      text-decoration: underline;
+    }
+
+    #scrolling-ticker-{{ section.id }} .ticker__separator {
+      color: {{ section.settings.separator_color }};
+      margin: 0 {{ section.settings.separator_gap }}px;
+      flex-shrink: 0;
+    }
+  </style>
+
+  <div
+    id="scrolling-ticker-{{ section.id }}"
+    class="scrolling-ticker-bar"
+    role="marquee"
+    aria-label="{{ 'sections.scrolling_ticker_bar.aria_label' | t }}"
+  >
+    <div class="ticker__track" aria-hidden="true">
+      {%- comment -%} Duplicate items twice so the loop is seamless {%- endcomment -%}
+      {%- for _pass in (1..2) -%}
+        {%- for block in items -%}
+          <span class="ticker__item" {{ block.shopify_attributes }}>
+            {%- if block.settings.link != blank -%}
+              <a href="{{ block.settings.link }}">
+            {%- endif -%}
+            {%- if block.settings.emoji != blank -%}
+              <span class="ticker__emoji" aria-hidden="true" style="margin-right:6px;">{{ block.settings.emoji }}</span>
+            {%- endif -%}
+            {{ block.settings.text | escape }}
+            {%- if block.settings.link != blank -%}
+              </a>
+            {%- endif -%}
+          </span>
+          {%- unless forloop.last and _pass == 2 -%}
+            <span class="ticker__separator" aria-hidden="true">{{ section.settings.separator }}</span>
+          {%- endunless -%}
+        {%- endfor -%}
+      {%- endfor -%}
+    </div>
+  </div>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "t:sections.scrolling_ticker_bar.name",
+  "tag": "div",
+  "class": "scrolling-ticker-bar-section",
+  "enabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "settings": [
+    {
+      "type": "header",
+      "content": "t:sections.scrolling_ticker_bar.settings.heading_scroll.content"
+    },
+    {
+      "type": "select",
+      "id": "scroll_direction",
+      "label": "t:sections.scrolling_ticker_bar.settings.scroll_direction.label",
+      "options": [
+        { "value": "left",  "label": "t:sections.scrolling_ticker_bar.settings.scroll_direction.options__1.label" },
+        { "value": "right", "label": "t:sections.scrolling_ticker_bar.settings.scroll_direction.options__2.label" }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "range",
+      "id": "scroll_speed",
+      "label": "t:sections.scrolling_ticker_bar.settings.scroll_speed.label",
+      "info": "t:sections.scrolling_ticker_bar.settings.scroll_speed.info",
+      "min": 2,
+      "max": 20,
+      "step": 1,
+      "unit": "s",
+      "default": 6
+    },
+    {
+      "type": "checkbox",
+      "id": "pause_on_hover",
+      "label": "t:sections.scrolling_ticker_bar.settings.pause_on_hover.label",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "t:sections.scrolling_ticker_bar.settings.heading_style.content"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "t:sections.scrolling_ticker_bar.settings.background_color.label",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "t:sections.scrolling_ticker_bar.settings.text_color.label",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "font_size",
+      "label": "t:sections.scrolling_ticker_bar.settings.font_size.label",
+      "min": 10,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 13
+    },
+    {
+      "type": "select",
+      "id": "font_weight",
+      "label": "t:sections.scrolling_ticker_bar.settings.font_weight.label",
+      "options": [
+        { "value": "400", "label": "t:sections.scrolling_ticker_bar.settings.font_weight.options__1.label" },
+        { "value": "500", "label": "t:sections.scrolling_ticker_bar.settings.font_weight.options__2.label" },
+        { "value": "600", "label": "t:sections.scrolling_ticker_bar.settings.font_weight.options__3.label" },
+        { "value": "700", "label": "t:sections.scrolling_ticker_bar.settings.font_weight.options__4.label" }
+      ],
+      "default": "400"
+    },
+    {
+      "type": "select",
+      "id": "text_transform",
+      "label": "t:sections.scrolling_ticker_bar.settings.text_transform.label",
+      "options": [
+        { "value": "none",       "label": "t:sections.scrolling_ticker_bar.settings.text_transform.options__1.label" },
+        { "value": "uppercase",  "label": "t:sections.scrolling_ticker_bar.settings.text_transform.options__2.label" },
+        { "value": "lowercase",  "label": "t:sections.scrolling_ticker_bar.settings.text_transform.options__3.label" },
+        { "value": "capitalize", "label": "t:sections.scrolling_ticker_bar.settings.text_transform.options__4.label" }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "range",
+      "id": "letter_spacing",
+      "label": "t:sections.scrolling_ticker_bar.settings.letter_spacing.label",
+      "min": 0,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "default": 2
+    },
+    {
+      "type": "header",
+      "content": "t:sections.scrolling_ticker_bar.settings.heading_layout.content"
+    },
+    {
+      "type": "range",
+      "id": "padding_vertical",
+      "label": "t:sections.scrolling_ticker_bar.settings.padding_vertical.label",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 10
+    },
+    {
+      "type": "range",
+      "id": "item_gap",
+      "label": "t:sections.scrolling_ticker_bar.settings.item_gap.label",
+      "min": 10,
+      "max": 80,
+      "step": 5,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "header",
+      "content": "t:sections.scrolling_ticker_bar.settings.heading_separator.content"
+    },
+    {
+      "type": "text",
+      "id": "separator",
+      "label": "t:sections.scrolling_ticker_bar.settings.separator.label",
+      "default": "·"
+    },
+    {
+      "type": "color",
+      "id": "separator_color",
+      "label": "t:sections.scrolling_ticker_bar.settings.separator_color.label",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "separator_gap",
+      "label": "t:sections.scrolling_ticker_bar.settings.separator_gap.label",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "header",
+      "content": "t:sections.scrolling_ticker_bar.settings.heading_border.content"
+    },
+    {
+      "type": "range",
+      "id": "border_width",
+      "label": "t:sections.scrolling_ticker_bar.settings.border_width.label",
+      "min": 0,
+      "max": 4,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "color",
+      "id": "border_color",
+      "label": "t:sections.scrolling_ticker_bar.settings.border_color.label",
+      "default": "#e8e8e1"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "item",
+      "name": "t:sections.scrolling_ticker_bar.blocks.item.name",
+      "settings": [
+        {
+          "type": "text",
+          "id": "text",
+          "label": "t:sections.scrolling_ticker_bar.blocks.item.settings.text.label",
+          "default": "t:sections.scrolling_ticker_bar.blocks.item.settings.text.default"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "t:sections.scrolling_ticker_bar.blocks.item.settings.link.label"
+        },
+        {
+          "type": "text",
+          "id": "emoji",
+          "label": "t:sections.scrolling_ticker_bar.blocks.item.settings.emoji.label",
+          "info": "t:sections.scrolling_ticker_bar.blocks.item.settings.emoji.info"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.scrolling_ticker_bar.presets.name",
+      "blocks": [
+        { "type": "item", "settings": { "text": "Free shipping on orders over $75" } },
+        { "type": "item", "settings": { "text": "New Swimwear is Live Now" } },
+        { "type": "item", "settings": { "text": "30 days Easy Returns & Exchanges" } },
+        { "type": "item", "settings": { "text": "No extra fees on US orders — Taxes & Duties Included" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

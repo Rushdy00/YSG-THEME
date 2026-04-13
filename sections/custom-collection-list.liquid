@@ -1,0 +1,290 @@
+<section class="pulse-collection-list" style="--overlay-darkness: {{ section.settings.overlay_opacity | divided_by: 100.0 }}; background-color: {{ section.settings.section_bg_color }};">
+  <div class="collection-grid columns-desktop-{{ section.settings.desktop_columns }} columns-mobile-{{ section.settings.mobile_columns }}{% if section.settings.enable_hover %} hover-enabled{% endif %}">
+    {% for block in section.blocks %}
+      {% if block.settings.image %}
+        <div class="collection-item{% if section.settings.enable_item_padding %} padded{% endif %}">
+          <a href="{{ block.settings.collection.url }}" class="collection-link">
+            <div class="collection-media">
+              <img src="{{ block.settings.image | image_url: width: 1200 }}" alt="{{ block.settings.title | escape }}">
+              <span class="collection-overlay"></span>
+            </div>
+            <div class="collection-info">
+              {% if block.settings.title != blank %}
+                <h3 class="collection-title" style="color: {{ block.settings.title_color }};">{{ block.settings.title }}</h3>
+              {% endif %}
+              {% if block.settings.subtext != blank %}
+                <p class="collection-subtext" style="color: {{ block.settings.subtext_color }};">{{ block.settings.subtext }}</p>
+              {% endif %}
+              {% if block.settings.button_label != blank %}
+                <a href="{{ block.settings.collection.url }}"
+                   class="collection-btn btn-style-{{ block.settings.button_style }}"
+                   style="--btn-t: {{ block.settings.button_text_color }};
+                          --btn-bg: {{ block.settings.button_bg_color }};
+                          --btn-ht: {{ block.settings.button_hover_text_color }};
+                          --btn-hbg: {{ block.settings.button_hover_bg_color }};
+                          --btn-rad: {{ block.settings.button_radius }}px;">
+                  {{ block.settings.button_label }}
+                </a>
+              {% endif %}
+            </div>
+          </a>
+        </div>
+      {% endif %}
+    {% endfor %}
+  </div>
+</section>
+
+<style>
+  .pulse-collection-list {
+    width: 100%;
+    position: relative;
+    --pad-side: 1.5px;
+    --pad-vert: 1px;
+  }
+
+  .collection-grid {
+    display: grid;
+    gap: 0;
+  }
+
+  .columns-desktop-1 { grid-template-columns: repeat(1, 1fr); }
+  .columns-desktop-2 { grid-template-columns: repeat(2, 1fr); }
+  .columns-desktop-3 { grid-template-columns: repeat(3, 1fr); }
+  .columns-desktop-4 { grid-template-columns: repeat(4, 1fr); }
+
+  @media (max-width: 768px) {
+    .columns-mobile-1 { grid-template-columns: repeat(1, 1fr); }
+    .columns-mobile-2 { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  .collection-item {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .collection-item.padded {
+    padding: var(--pad-vert) var(--pad-side);
+  }
+
+  .columns-desktop-1 .collection-media { height: 480px; }
+  .columns-desktop-2 .collection-media { height: 480px; }
+  .columns-desktop-3 .collection-media { height: 590px; }
+  .columns-desktop-4 .collection-media { height: 640px; }
+
+  @media (max-width: 768px) {
+    .columns-mobile-1 .collection-media { height: 320px; }
+    .columns-mobile-2 .collection-media { height: 320px; }
+  }
+
+  .collection-media {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+  }
+
+  .collection-media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform .4s ease;
+  }
+
+  .collection-grid.hover-enabled .collection-item:hover img {
+    transform: scale(1.03);
+  }
+
+  .collection-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, var(--overlay-darkness));
+    transition: background .3s ease;
+    z-index: 1;
+  }
+
+  .collection-grid.hover-enabled .collection-item:hover .collection-overlay {
+    background: rgba(0, 0, 0, calc(var(--overlay-darkness) + 0.08));
+  }
+
+  .collection-link {
+    display: block;
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .collection-info {
+    position: absolute;
+    bottom: 15px;
+    left: 15px;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    text-align: left;
+  }
+
+  .collection-title {
+    letter-spacing: 2px;
+    font-size: 14px;
+    margin: 0;
+  }
+
+  .collection-subtext {
+    font-size: 11px;
+    margin: 0;
+  }
+
+  .collection-btn {
+    font-size: 14px;
+    text-decoration: none;
+    padding: 5px 30px;
+    border-radius: var(--btn-rad);
+    color: var(--btn-t);
+    transition: all .3s ease;
+    display: inline-block;
+    width: fit-content;
+    gap: 12px;
+  }
+
+  .btn-style-solid {
+    background: var(--btn-bg);
+    border: none;
+  }
+
+  .btn-style-solid:hover {
+    background: var(--btn-hbg);
+    color: var(--btn-ht);
+  }
+
+.btn-style-outline {
+  background: rgba(255,255,255,0.08);
+  backdrop-filter: blur(6px);
+  color: var(--btn-t);
+  border: 1px solid var(--btn-t);
+  border-radius: var(--btn-rad);
+  transition: all .3s ease;
+  padding: 5px 30px;
+}
+
+  .btn-style-outline:hover {
+    background-color: var(--btn-hbg);
+    color: var(--btn-ht);
+    border-color: var(--btn-hbg);
+  }
+
+  .btn-style-underlined {
+    background: transparent !important;
+    color: var(--btn-t);
+    border: none;
+    border-bottom: 1px solid var(--btn-t);
+    border-radius: 0;
+    padding: 0 0 4px 0;
+    line-height: 1.1;
+  }
+
+  .btn-style-underlined:hover {
+    color: var(--btn-ht);
+    border-color: var(--btn-ht);
+  }
+
+  @media (max-width: 768px) {
+    .collection-title { font-size: 12px; }
+    .collection-subtext { font-size: 10px; }
+    .collection-btn { font-size: 10px; padding: 3px 14px; }
+    .collection-btn.btn-style-solid {
+    font-size: 10px;
+    padding: 5px 30px !important;
+  }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Collection List",
+  "settings": [
+    {
+      "type": "select",
+      "id": "desktop_columns",
+      "label": "Desktop Columns",
+      "options": [
+        { "value": "1", "label": "1 Column" },
+        { "value": "2", "label": "2 Columns" },
+        { "value": "3", "label": "3 Columns" },
+        { "value": "4", "label": "4 Columns" }
+      ],
+      "default": "3"
+    },
+    {
+      "type": "select",
+      "id": "mobile_columns",
+      "label": "Mobile Columns",
+      "options": [
+        { "value": "1", "label": "1 Column" },
+        { "value": "2", "label": "2 Columns" }
+      ],
+      "default": "1"
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "label": "Overlay Opacity (%)",
+      "min": 0,
+      "max": 90,
+      "step": 5,
+      "default": 40
+    },
+        {
+      "type": "color",
+      "id": "section_bg_color",
+      "label": "Background Color",
+      "default": "#000000"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_item_padding",
+      "label": "Enable Spacing",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_hover",
+      "label": "Enable Hover Effect",
+      "default": true
+    }
+  ],
+  "blocks": [
+    {
+      "type": "collection_block",
+      "name": "Collection Item",
+      "settings": [
+        { "type": "image_picker", "id": "image", "label": "Image" },
+        { "type": "collection", "id": "collection", "label": "Collection" },
+        { "type": "header", "content": "Typography" },
+        { "type": "text", "id": "title", "label": "Title" },
+        { "type": "color", "id": "title_color", "label": "Title Color", "default": "#ffffff" },
+        { "type": "text", "id": "subtext", "label": "Subtext" },
+        { "type": "color", "id": "subtext_color", "label": "Subtext Color", "default": "#eaeaea" },
+        { "type": "header", "content": "Button" },
+        { "type": "text", "id": "button_label", "label": "Label" },
+        {
+          "type": "select",
+          "id": "button_style",
+          "label": "Style",
+          "options": [
+            { "value": "solid", "label": "Solid" },
+            { "value": "underlined", "label": "Underlined" },
+            { "value": "outline", "label": "Outline" }
+          ],
+          "default": "solid"
+        },
+        { "type": "color", "id": "button_text_color", "label": "Text Color", "default": "#ffffff" },
+        { "type": "color", "id": "button_bg_color", "label": "Background Color", "default": "#000000" },
+        { "type": "color", "id": "button_hover_text_color", "label": "Hover Text Color", "default": "#ffffff" },
+        { "type": "color", "id": "button_hover_bg_color", "label": "Hover Background Color", "default": "#333333" },
+        { "type": "range", "id": "button_radius", "label": "Corner Radius (px)", "min": 0, "max": 30, "step": 2, "default": 0 }
+      ]
+    }
+  ],
+  "presets": [{ "name": "Collection List" }]
+}
+{% endschema %}
