@@ -1253,6 +1253,9 @@
           },
           "options__4": {
             "label": "Large"
+          },
+          "options__5": {
+            "label": "Full screen"
           }
           },
         "content": {
@@ -1924,6 +1927,13 @@
             "option_2": "Standard",
             "option_3": "Bulk"
           }
+        },
+        "header__hover_sizes": {
+          "content": "Hover sizes"
+        },
+        "show_hover_sizes": {
+          "label": "Show sizes on hover",
+          "info": "Shows available sizes on product cards when hovering"
         },
         "columns_mobile": {
           "label": "Mobile columns",

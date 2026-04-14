@@ -303,6 +303,7 @@
 .card__heading {
   margin-top: 0;
   margin-bottom: 0;
+  font-weight: 700;
 }
 
 .card__heading:last-child {
@@ -592,4 +593,101 @@
   .grid__item:nth-child(8n) .product-card-wrapper:hover .shape--blob {
     clip-path: polygon(var(--shape--blob-5));
   }
+}
+
+/* Hover size swap – sizes replace title + price in the same area on hover */
+.card__information {
+  display: grid;
+}
+
+.card-info-default,
+.card-sizes {
+  grid-column: 1;
+  grid-row: 1;
+}
+
+.card-info-default {
+  transition: opacity 0.2s ease;
+}
+
+.card-sizes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2.2rem;
+  align-items: center;
+  justify-content: center;
+  padding: 0.6rem 0.4rem;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  pointer-events: none;
+  position: relative;
+  z-index: 2;
+}
+
+.card-wrapper:hover .card-info-default {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.card-wrapper:hover .card-sizes {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.card-size-pill {
+  /* button reset */
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  font-family: inherit;
+  -webkit-appearance: none;
+  appearance: none;
+  /* styles */
+  display: inline-block;
+  font-size: 1.5rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgb(var(--color-foreground));
+  line-height: 1.2;
+  cursor: default;
+}
+
+.card-size-pill[data-variant-id] {
+  position: relative;
+  cursor: pointer;
+  z-index: 2;
+  transition: opacity 0.15s ease;
+}
+
+.card-size-pill[data-variant-id]::after {
+  content: '+';
+  position: absolute;
+  top: -0.65rem;
+  right: -0.45rem;
+  font-size: 0.9rem;
+  font-weight: 700;
+  line-height: 1;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.card-size-pill[data-variant-id]:hover::after {
+  opacity: 1;
+}
+
+.card-size-pill.is-adding {
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+.card-size-pill.is-added::after {
+  content: '✓';
+  opacity: 1;
+}
+
+.card-size-pill--unavailable {
+  text-decoration: line-through;
+  opacity: 0.35;
 }

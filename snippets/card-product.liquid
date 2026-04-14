@@ -145,6 +145,7 @@
       </div>
       <div class="card__content">
         <div class="card__information">
+          <div class="card-info-default">
           <h3
             class="card__heading{% if card_product.featured_media or settings.card_style == 'standard' %} h5{% endif %}"
             {% if card_product.featured_media or settings.card_style == 'card' %}
@@ -287,6 +288,39 @@
               {% endif %}
             {%- endif -%}
           </div>
+          </div>
+          {%- liquid
+            assign size_option = nil
+            assign size_option_position = nil
+            for option in card_product.options_with_values
+              assign option_downcase = option.name | downcase
+              if option_downcase == 'size'
+                assign size_option = option
+                assign size_option_position = option.position | minus: 1
+                break
+              endif
+            endfor
+          -%}
+          {%- if show_hover_sizes and size_option != nil -%}
+            <div class="card-sizes">
+              {%- for size_value in size_option.values -%}
+                {%- assign is_available = false -%}
+                {%- assign size_variant_id = nil -%}
+                {%- for variant in card_product.variants -%}
+                  {%- if variant.options[size_option_position] == size_value and variant.available -%}
+                    {%- assign is_available = true -%}
+                    {%- assign size_variant_id = variant.id -%}
+                    {%- break -%}
+                  {%- endif -%}
+                {%- endfor -%}
+                <button
+                  type="button"
+                  class="card-size-pill{% unless is_available %} card-size-pill--unavailable{% endunless %}"
+                  {% if size_variant_id %}data-variant-id="{{ size_variant_id }}"{% else %}disabled{% endif %}
+                >{{ size_value }}</button>
+              {%- endfor -%}
+            </div>
+          {%- endif -%}
         </div>
         {% assign product_form_id = 'quick-add-' | append: section_id | append: card_product.id %}
         {% if quick_add == 'standard' %}

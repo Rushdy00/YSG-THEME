@@ -125,6 +125,7 @@
                   show_secondary_image: section.settings.show_secondary_image,
                   show_vendor: section.settings.show_vendor,
                   show_rating: section.settings.show_rating,
+                  show_hover_sizes: section.settings.show_hover_sizes,
                   skip_styles: skip_card_product_styles,
                   section_id: section.id,
                   quick_add: section.settings.quick_add
@@ -213,6 +214,69 @@
     {%- endif -%}
   </div>
 </div>
+
+{%- if section.settings.show_hover_sizes -%}
+<script>
+(function () {
+  if (window.__sizeQuickAddReady) return;
+  window.__sizeQuickAddReady = true;
+
+  // useCapture:true — runs before any element (including the card <a> link) sees the event
+  document.addEventListener('click', function (e) {
+    var pill = e.target.closest('.card-size-pill[data-variant-id]');
+    if (!pill || pill.classList.contains('is-adding')) return;
+
+    // Kill the event completely so the card link never fires
+    e.preventDefault();
+    e.stopImmediatePropagation();
+
+    var variantId = pill.dataset.variantId;
+    pill.classList.add('is-adding');
+
+    var cart = document.querySelector('cart-drawer') || document.querySelector('cart-notification');
+
+    var formData = new FormData();
+    formData.append('id', variantId);
+    formData.append('quantity', '1');
+    if (cart) {
+      formData.append('sections', cart.getSectionsToRender().map(function (s) { return s.id; }).join(','));
+      formData.append('sections_url', window.location.pathname);
+      cart.setActiveElement(document.activeElement);
+    }
+
+    fetch(window.routes.cart_add_url, {
+      method: 'POST',
+      headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' },
+      body: formData
+    })
+      .then(function (r) { return r.json(); })
+      .then(function (response) {
+        pill.classList.remove('is-adding');
+        if (response.status) return;
+
+        pill.classList.add('is-added');
+        setTimeout(function () { pill.classList.remove('is-added'); }, 1500);
+
+        if (!cart) { window.location = window.routes.cart_url; return; }
+
+        if (typeof publish === 'function' && typeof PUB_SUB_EVENTS !== 'undefined') {
+          publish(PUB_SUB_EVENTS.cartUpdate, {
+            source: 'size-quick-add',
+            productVariantId: variantId,
+            cartData: response
+          });
+        }
+
+        if (cart.classList.contains('is-empty')) cart.classList.remove('is-empty');
+        cart.renderContents(response);
+      })
+      .catch(function () {
+        pill.classList.remove('is-adding');
+      });
+  }, true); // <-- capture phase
+})();
+</script>
+{%- endif -%}
 
 {% schema %}
 {
@@ -447,6 +511,17 @@
       "default": false,
       "label": "t:sections.featured-collection.settings.show_rating.label",
       "info": "t:sections.featured-collection.settings.show_rating.info"
+    },
+    {
+      "type": "header",
+      "content": "Hover sizes"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_hover_sizes",
+      "label": "Show sizes on hover",
+      "default": true,
+      "info": "Replaces the title and price with available sizes when hovering over a product card"
     },
     {
       "type": "select",
