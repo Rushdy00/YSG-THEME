@@ -1173,6 +1173,25 @@
           },
           "options__3": {
             "label": "Drawer"
+          },
+          "options__4": {
+            "label": "Collection banner"
+          }
+        },
+        "collection_banner_image_ratio": {
+          "label": "Collection banner image ratio",
+          "info": "Applies only when menu type is set to Collection banner",
+          "options__1": {
+            "label": "Adapt to image"
+          },
+          "options__2": {
+            "label": "Square"
+          },
+          "options__3": {
+            "label": "Portrait"
+          },
+          "options__4": {
+            "label": "Landscape"
           }
         },
         "show_line_separator": {

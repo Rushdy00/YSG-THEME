@@ -1,0 +1,92 @@
+{% comment %}
+  Renders a collection-banner mega menu for the header.
+  Each child link is displayed as an image card using its collection image,
+  with the collection title overlaid at the bottom-left corner.
+
+  Usage:
+  {% render 'header-collection-banner-menu' %}
+{% endcomment %}
+
+<nav class="header__inline-menu">
+  <ul class="list-menu list-menu--inline" role="list">
+    {%- for link in section.settings.menu.links -%}
+      <li>
+        {%- if link.links != blank -%}
+          <collection-banner-menu>
+            <details id="Details-CollectionBannerMenu-{{ forloop.index }}" class="collection-banner-menu">
+              <summary
+                id="CollectionBannerMenu-{{ link.handle }}"
+                class="header__menu-item list-menu__item link focus-inset"
+              >
+                <span
+                  {%- if link.child_active %}
+                    class="header__active-menu-item"
+                  {% endif %}
+                >
+                  {{- link.title | escape -}}
+                </span>
+                {{- 'icon-caret.svg' | inline_asset_content -}}
+              </summary>
+              <div
+                id="CollectionBannerMenu-Content-{{ forloop.index }}"
+                class="collection-banner-menu__content color-{{ section.settings.menu_color_scheme }} gradient motion-reduce global-settings-popup"
+                tabindex="-1"
+              >
+                <ul class="collection-banner-menu__list" data-ratio="{{ section.settings.collection_banner_image_ratio }}" role="list">
+                  {%- for childlink in link.links -%}
+                    {%- assign collection_obj = collections[childlink.handle] -%}
+                    <li class="collection-banner-menu__item">
+                      <a
+                        id="CollectionBannerMenu-{{ link.handle }}-{{ childlink.handle }}"
+                        href="{{ childlink.url }}"
+                        class="collection-banner-menu__card{% if childlink.current %} collection-banner-menu__card--active{% endif %}"
+                        {% if childlink.current %}
+                          aria-current="page"
+                        {% endif %}
+                      >
+                        {%- if collection_obj.image != blank -%}
+                          {{
+                            collection_obj.image
+                            | image_url: width: 800
+                            | image_tag:
+                              class: 'collection-banner-menu__image',
+                              widths: '400, 600, 800',
+                              sizes: '(min-width: 990px) 20vw, 50vw',
+                              loading: 'lazy',
+                              alt: childlink.title
+                          }}
+                        {%- else -%}
+                          <div class="collection-banner-menu__image collection-banner-menu__image--placeholder">
+                            {{ 'collection-1' | placeholder_svg_tag }}
+                          </div>
+                        {%- endif -%}
+                        <span class="collection-banner-menu__title">{{ childlink.title | escape }}</span>
+                      </a>
+                    </li>
+                  {%- endfor -%}
+                </ul>
+              </div>
+            </details>
+          </collection-banner-menu>
+        {%- else -%}
+          <a
+            id="CollectionBannerMenu-{{ link.handle }}"
+            href="{{ link.url }}"
+            class="header__menu-item list-menu__item link link--text focus-inset"
+            {% if link.current %}
+              aria-current="page"
+            {% endif %}
+          >
+            <span
+              {%- if link.current %}
+                class="header__active-menu-item"
+              {% endif %}
+            >
+              {{- link.title | escape -}}
+            </span>
+          </a>
+        {%- endif -%}
+      </li>
+    {%- endfor -%}
+  </ul>
+</nav>

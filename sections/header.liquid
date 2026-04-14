@@ -16,6 +16,11 @@
   <link rel="stylesheet" href="{{ 'component-mega-menu.css' | asset_url }}" media="print" onload="this.media='all'">
 {%- endif -%}
 
+{%- if section.settings.menu_type_desktop == 'collection_banner' -%}
+  <link rel="stylesheet" href="{{ 'component-collection-banner-menu.css' | asset_url }}" media="print" onload="this.media='all'">
+  <script src="{{ 'collection-banner-menu.js' | asset_url }}" defer="defer"></script>
+{%- endif -%}
+
 <style>
   header-drawer {
     justify-self: start;
@@ -184,6 +189,8 @@
       if section.settings.menu != blank
         if section.settings.menu_type_desktop == 'dropdown'
           render 'header-dropdown-menu'
+        elsif section.settings.menu_type_desktop == 'collection_banner'
+          render 'header-collection-banner-menu'
         elsif section.settings.menu_type_desktop != 'drawer'
           render 'header-mega-menu'
         endif
@@ -536,10 +543,39 @@
         {
           "value": "drawer",
           "label": "t:sections.header.settings.menu_type_desktop.options__3.label"
+        },
+        {
+          "value": "collection_banner",
+          "label": "t:sections.header.settings.menu_type_desktop.options__4.label"
         }
       ],
       "default": "dropdown",
       "label": "t:sections.header.settings.menu_type_desktop.label"
+    },
+    {
+      "type": "select",
+      "id": "collection_banner_image_ratio",
+      "options": [
+        {
+          "value": "adapt",
+          "label": "t:sections.header.settings.collection_banner_image_ratio.options__1.label"
+        },
+        {
+          "value": "square",
+          "label": "t:sections.header.settings.collection_banner_image_ratio.options__2.label"
+        },
+        {
+          "value": "portrait",
+          "label": "t:sections.header.settings.collection_banner_image_ratio.options__3.label"
+        },
+        {
+          "value": "landscape",
+          "label": "t:sections.header.settings.collection_banner_image_ratio.options__4.label"
+        }
+      ],
+      "default": "portrait",
+      "label": "t:sections.header.settings.collection_banner_image_ratio.label",
+      "info": "t:sections.header.settings.collection_banner_image_ratio.info"
     },
     {
       "type": "select",
